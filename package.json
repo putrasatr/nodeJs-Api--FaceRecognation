@@ -1,0 +1,40 @@
+{
+  "name": "nodejsapifacerecognition",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./app.js"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1",
+    "@tensorflow/tfjs-core": "1.7.0",
+    "tslib": "^1.11.1",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "@tensorflow/tfjs-node": "1.7.0",
+    "@types/jasmine": "^3.5.9",
+    "@types/node": "^13.9.2",
+    "canvas": "2.6.1",
+    "jasmine": "^3.5.0",
+    "jasmine-core": "^3.5.0",
+    "karma": "^4.4.1",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^3.1.1",
+    "karma-typescript": "^5.0.1",
+    "nodemon": "^2.0.7",
+    "rollup": "^2.1.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "rollup-plugin-uglify": "^6.0.4",
+    "ts-node": "^8.7.0",
+    "typescript": "^3.8.3"
+  }
+}
