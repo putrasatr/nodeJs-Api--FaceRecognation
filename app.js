@@ -43,6 +43,8 @@
 const express = require('express')
 const path = require('path')
 const { get } = require('request')
+const faceapi = require('./dist/face-api')
+const fileUpload = require("express-fileupload");
 
 const app = express()
 
@@ -56,6 +58,7 @@ app.use(express.static(path.join(__dirname, './images')))
 app.use(express.static(path.join(__dirname, './media')))
 app.use(express.static(path.join(__dirname, './weights')))
 app.use(express.static(path.join(__dirname, './dist')))
+app.use(fileUpload())
 
 app.get('/', (req, res) => res.redirect('/face_detection'))
 app.get('/face_detection', (req, res) => res.sendFile(path.join(viewsDir, 'faceDetection.html')))
@@ -90,10 +93,48 @@ app.post('/fetch_external_image', async (req, res) => {
   }
 })
 
+app.post('/register-photo', async (req, res) => {
+  try {
+    const inputImgEl = $('#refImg').get(0)
+    const canvas = $('#refImgOverlay').get(0)
+
+    const fullFaceDescriptions = await faceapi
+      .detectAllFaces(inputImgEl, getFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptors()
+
+    if (!fullFaceDescriptions.length) {
+      return
+    }
+
+    // create FaceMatcher with automatically assigned labels
+    // from the detection results for the reference image
+    faceMatcher = new faceapi.FaceMatcher(fullFaceDescriptions)
+
+    faceapi.matchDimensions(canvas, inputImgEl)
+    // resize detection and landmarks in case displayed image is smaller than
+    // original size
+    const resizedResults = faceapi.resizeResults(fullFaceDescriptions, inputImgEl)
+    // draw boxes with the corresponding label as text
+    const labels = faceMatcher.labeledDescriptors
+      .map(ld => ld.label)
+    resizedResults.forEach(({ detection, descriptor }) => {
+      const label = faceMatcher.findBestMatch(descriptor).toString()
+      const options = { label }
+      const drawBox = new faceapi.draw.DrawBox(detection.box, options)
+      drawBox.draw(canvas)
+    })
+  } catch (error) {
+
+  }
+
+
+})
+
 app.listen(3000, () => console.log('Listening on port 3000!'))
 
 function request(url, returnBuffer = true, timeout = 10000) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const options = Object.assign(
       {},
       {
@@ -107,7 +148,7 @@ function request(url, returnBuffer = true, timeout = 10000) {
       returnBuffer ? { encoding: null } : {}
     )
 
-    get(options, function(err, res) {
+    get(options, function (err, res) {
       if (err) return reject(err)
       return resolve(res)
     })
