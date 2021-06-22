@@ -167,12 +167,12 @@
   async function updateReferenceImageResults() {
     const inputImgEl = $('#refImg').get(0)
     const canvas = $('#refImgOverlay').get(0)
-
+    // console.log(inputImgEl)
     const fullFaceDescriptions = await faceapi
       .detectAllFaces(inputImgEl, getFaceDetectorOptions())
       .withFaceLandmarks()
       .withFaceDescriptors()
-
+console.log('ff',fullFaceDescriptions)
     if (!fullFaceDescriptions.length) {
       return
     }
@@ -203,13 +203,10 @@
 
     const inputImgEl = $('#queryImg').get(0)
     const canvas = $('#queryImgOverlay').get(0)
-    console.log('inputImgEl', inputImgEl)
-    console.log('canvas', canvas)
     const results = await faceapi
       .detectAllFaces(inputImgEl, getFaceDetectorOptions())
       .withFaceLandmarks()
       .withFaceDescriptors()
-console.log(results)
     faceapi.matchDimensions(canvas, inputImgEl)
     // resize detection and landmarks in case displayed image is smaller than
     // original size

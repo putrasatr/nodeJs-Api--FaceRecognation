@@ -45,6 +45,7 @@ const path = require('path')
 const { get } = require('request')
 const faceapi = require('./dist/face-api')
 const fileUpload = require("express-fileupload");
+const {Image,createCanvas} = require('canvas')
 
 const app = express()
 
@@ -95,35 +96,50 @@ app.post('/fetch_external_image', async (req, res) => {
 
 app.post('/register-photo', async (req, res) => {
   try {
-    const inputImgEl = $('#refImg').get(0)
-    const canvas = $('#refImgOverlay').get(0)
+    const { image } = req.body;
+    const canvas = createCanvas(500, 500)
+    const ctx = canvas.getContext('2d')
 
-    const fullFaceDescriptions = await faceapi
-      .detectAllFaces(inputImgEl, getFaceDetectorOptions())
-      .withFaceLandmarks()
-      .withFaceDescriptors()
+    ctx.font = '12px "Comic Sans"'
+    ctx.fillText('Everyone hates this font :(', 250, 10)
+    let img = new Image()
+    img.onload = () => ctx.drawImage(img, 0, 0)
+    img.onerror = err => { throw err }
+    img.src = image
+    // // let html = JSON.parse(image);
+    // // console.log(html)
+    console.lof(img)
+    const refImage = canvas.loadImage(image)
+    res.json({ message: 'Foto Berhasil ditambahkan', img })
+    // const inputImgEl = $('#refImg').get(0)
+    // const canvas = $('#refImgOverlay').get(0)
 
-    if (!fullFaceDescriptions.length) {
-      return
-    }
+    // const fullFaceDescriptions = await faceapi
+    //   .detectAllFaces(inputImgEl, getFaceDetectorOptions())
+    //   .withFaceLandmarks()
+    //   .withFaceDescriptors()
 
-    // create FaceMatcher with automatically assigned labels
-    // from the detection results for the reference image
-    faceMatcher = new faceapi.FaceMatcher(fullFaceDescriptions)
+    // if (!fullFaceDescriptions.length) {
+    //   return
+    // }
 
-    faceapi.matchDimensions(canvas, inputImgEl)
-    // resize detection and landmarks in case displayed image is smaller than
-    // original size
-    const resizedResults = faceapi.resizeResults(fullFaceDescriptions, inputImgEl)
-    // draw boxes with the corresponding label as text
-    const labels = faceMatcher.labeledDescriptors
-      .map(ld => ld.label)
-    resizedResults.forEach(({ detection, descriptor }) => {
-      const label = faceMatcher.findBestMatch(descriptor).toString()
-      const options = { label }
-      const drawBox = new faceapi.draw.DrawBox(detection.box, options)
-      drawBox.draw(canvas)
-    })
+    // // create FaceMatcher with automatically assigned labels
+    // // from the detection results for the reference image
+    // faceMatcher = new faceapi.FaceMatcher(fullFaceDescriptions)
+
+    // faceapi.matchDimensions(canvas, inputImgEl)
+    // // resize detection and landmarks in case displayed image is smaller than
+    // // original size
+    // const resizedResults = faceapi.resizeResults(fullFaceDescriptions, inputImgEl)
+    // // draw boxes with the corresponding label as text
+    // const labels = faceMatcher.labeledDescriptors
+    //   .map(ld => ld.label)
+    // resizedResults.forEach(({ detection, descriptor }) => {
+    //   const label = faceMatcher.findBestMatch(descriptor).toString()
+    //   const options = { label }
+    //   const drawBox = new faceapi.draw.DrawBox(detection.box, options)
+    //   drawBox.draw(canvas)
+    // })
   } catch (error) {
 
   }

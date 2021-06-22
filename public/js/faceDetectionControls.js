@@ -95,6 +95,7 @@ async function changeFaceDetector(detector) {
   $('#loader').hide()
 }
 
+
 async function onSelectedFaceDetectorChanged(e) {
   selectedFaceDetector = e.target.value
 
